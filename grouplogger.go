@@ -50,16 +50,16 @@ type Client struct {
 //
 // Options are documented here:
 // https://godoc.org/google.golang.org/api/option#ClientOption
-func NewClient(ctx context.Context, parent string, opts ...option.ClientOption) (Client, error) {
+func NewClient(ctx context.Context, parent string, opts ...option.ClientOption) (*Client, error) {
 	client, err := logging.NewClient(ctx, parent, opts...)
 	if err != nil {
-		return Client{}, err
+		return &Client{}, err
 	}
-	return Client{client}, nil
+	return &Client{client}, nil
 }
 
 // Close waits for all opened GroupLoggers to be flushed and closes the client.
-func (client Client) Close() error {
+func (client *Client) Close() error {
 	return client.innerClient.Close()
 }
 
@@ -68,7 +68,7 @@ func (client Client) Close() error {
 //
 // Logger options (labels, resources, etc.) are documented here:
 // https://godoc.org/cloud.google.com/go/logging#LoggerOption
-func (client Client) Logger(r *http.Request, name string, opts ...logging.LoggerOption) *GroupLogger {
+func (client *Client) Logger(r *http.Request, name string, opts ...logging.LoggerOption) *GroupLogger {
 	outerLogger := client.innerClient.Logger(fmt.Sprintf(outerFormat, name), opts...)
 	innerLogger := client.innerClient.Logger(fmt.Sprintf(innerFormat, name), opts...)
 	// Use trace from request if available; otherwise generate a group ID.
@@ -79,7 +79,7 @@ func (client Client) Logger(r *http.Request, name string, opts ...logging.Logger
 // Ping reports whether the client's connection to the logging service and the
 // authentication configuration are valid. To accomplish this, Ping writes a log
 // entry "ping" to a log named "ping".
-func (client Client) Ping(ctx context.Context) error {
+func (client *Client) Ping(ctx context.Context) error {
 	return client.innerClient.Ping(ctx)
 }
 
@@ -89,7 +89,7 @@ func (client Client) Ping(ctx context.Context) error {
 //
 // Detailed OnError behavior is documented here:
 // https://godoc.org/cloud.google.com/go/logging#Client
-func (client Client) SetOnError(f func(err error)) {
+func (client *Client) SetOnError(f func(err error)) {
 	client.innerClient.OnError = f
 }
 
