@@ -7,23 +7,49 @@ Grouplogger is a specialized Stackdriver logging client for writing groups of lo
 ([Stackdriver documentation: Viewing related request log entries](https://cloud.google.com/appengine/docs/flexible/go/writing-application-logs#related-app-logs))
 
 ```go
-var r *http.Request
-var ctx *context.Context
+package main
 
-cli, err := NewClient(ctx, "parent-id")
-if err != nil {
-	// TODO: handle.
-}
+import (
+	"fmt"
+	"log"
+	"net/http"
+	"net/url"
 
-logger := cli.Logger(r, "logname")
+	"github.com/vimeo/grouplogger"
+	"golang.org/x/net/context"
+)
 
-logger.Info("Entry with Info severity.")
-logger.Notice(map[string][]string{
+func main() {
+	// Stackdriver requires a non-nil http.Request.
+	u, err := url.Parse("http://notareal.website/search?q=hihihi")
+	if err != nil {
+		log.Fatal(err)
+	}
+	req := &http.Request{
+		Header: http.Header{
+			"X-Cloud-Trace-Context": []string{"your-trace-id"},
+		},
+		URL: u,
+	}
+
+	cli, err := grouplogger.NewClient(context.Background(), "your-project-id")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	logger := cli.Logger(req, "logname")
+
+	logger.Info("Entry with Info severity.")
+	logger.Notice(map[string][]string{
   "Words": []string{"structured", "data", "in", "entries"},
 })
-logger.Warning("Look out! Entry with Warning severity.")
+	logger.Warning("Look out! Entry with Warning severity.")
 
-logger.Close()
+	logger.Close()
+
+	err = cli.Close()
+	log.Fatal(err)
+}
 ```
 
 <img alt="screen shot 2018-07-31 at 12 33 06 pm" src="https://user-images.githubusercontent.com/4955943/43481638-8330b71e-94d4-11e8-9288-cc16d48bf062.png">
