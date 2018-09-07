@@ -28,7 +28,7 @@ logger := cli.Logger(req, "logname")
 
 logger.Info("Entry with Info severity.")
 logger.Notice(map[string][]string{
-"Words": []string{"structured", "data", "in", "entries"},
+  "Words": []string{"structured", "data", "in", "entries"},
 })
 logger.Warning("Look out! Entry with Warning severity.")
 
