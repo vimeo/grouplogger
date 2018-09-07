@@ -10,25 +10,25 @@ Grouplogger is a specialized Stackdriver logging client for writing groups of lo
 // Stackdriver requires a non-nil http.Request.
 u, err := url.Parse("http://notareal.website/search?q=hihihi")
 if err != nil {
-  log.Fatal(err)
+	log.Fatal(err)
 }
 req := &http.Request{
-  Header: http.Header{
-    "X-Cloud-Trace-Context": []string{"your-trace-id"},
-  },
-  URL: u,
+	Header: http.Header{
+		"X-Cloud-Trace-Context": []string{"your-trace-id"},
+	},
+	URL: u,
 }
 
 cli, err := grouplogger.NewClient(context.Background(), "your-project-id")
 if err != nil {
-  log.Fatal(err)
+	log.Fatal(err)
 }
 
 logger := cli.Logger(req, "logname")
 
 logger.Info("Entry with Info severity.")
 logger.Notice(map[string][]string{
-  "Words": []string{"structured", "data", "in", "entries"},
+	"Words": []string{"structured", "data", "in", "entries"},
 })
 logger.Warning("Look out! Entry with Warning severity.")
 
