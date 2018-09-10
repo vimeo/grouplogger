@@ -20,7 +20,7 @@ req := &http.Request{
 }
 
 ctx := context.Background()
-cli, _ := grouplogger.NewClient(ctx, "vimeo-mako-dev")
+cli, _ := grouplogger.NewClient(ctx, "your-project-id")
 
 logger := cli.Logger(req, "logname")
 
