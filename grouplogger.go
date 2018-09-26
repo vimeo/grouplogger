@@ -72,7 +72,12 @@ func (client *Client) Logger(r *http.Request, name string, opts ...logging.Logge
 	outerLogger := client.innerClient.Logger(fmt.Sprintf(outerFormat, name), opts...)
 	innerLogger := client.innerClient.Logger(fmt.Sprintf(innerFormat, name), opts...)
 	// Use trace from request if available; otherwise generate a group ID.
-	gl := &GroupLogger{r, getGroupID(r), outerLogger, innerLogger, nil}
+	gl := &GroupLogger{
+		Req:         r,
+		GroupID:     getGroupID(r),
+		OuterLogger: outerLogger,
+		InnerLogger: innerLogger,
+	}
 	return gl
 }
 
