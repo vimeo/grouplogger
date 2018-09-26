@@ -130,7 +130,9 @@ func (gl *GroupLogger) Close() {
 // If LogOuterEntry is not called, nothing from this group will appear in
 // the outer log.
 func (gl *GroupLogger) CloseWith(stats *logging.HTTPRequest) {
-	stats.Request = gl.Req
+	if gl.Req != nil {
+		stats.Request = gl.Req
+	}
 	entry := logging.Entry{
 		Trace:       gl.GroupID,
 		Severity:    gl.getMaxSeverity(),
@@ -266,8 +268,10 @@ func (gl *GroupLogger) getMaxSeverity() logging.Severity {
 // Otherwise, a pseudorandom UUID is used.
 func getGroupID(r *http.Request) string {
 	// If the trace header exists, use the trace.
-	if id := r.Header.Get("X-Cloud-Trace-Context"); id != "" {
-		return id
+	if r != nil {
+		if id := r.Header.Get("X-Cloud-Trace-Context"); id != "" {
+			return id
+		}
 	}
 	// Otherwise, generate a random group ID.
 	return uuid.New().String()
