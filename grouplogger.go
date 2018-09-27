@@ -73,8 +73,10 @@ func (client *Client) Logger(r *http.Request, name string, opts ...logging.Logge
 	innerLogger := client.innerClient.Logger(fmt.Sprintf(innerFormat, name), opts...)
 	// Use trace from request if available; otherwise generate a group ID.
 	gl := &GroupLogger{
-		Req:         r,
-		GroupID:     getGroupID(r, newUUID),
+		Req: r,
+		GroupID: getGroupID(r, func() string {
+			return uuid.New().String()
+		}),
 		OuterLogger: outerLogger,
 		InnerLogger: innerLogger,
 	}
@@ -257,10 +259,6 @@ func (gl *GroupLogger) getMaxSeverity() logging.Severity {
 		}
 	}
 	return max
-}
-
-func newUUID() string {
-	return uuid.New().String()
 }
 
 // getGroupID selects an ID by which the group will be grouped in the Google
