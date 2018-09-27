@@ -74,7 +74,7 @@ func (client *Client) Logger(r *http.Request, name string, opts ...logging.Logge
 	// Use trace from request if available; otherwise generate a group ID.
 	gl := &GroupLogger{
 		Req:         r,
-		GroupID:     getGroupID(r),
+		GroupID:     getGroupID(r, NewUUID),
 		OuterLogger: outerLogger,
 		InnerLogger: innerLogger,
 	}
@@ -259,6 +259,10 @@ func (gl *GroupLogger) getMaxSeverity() logging.Severity {
 	return max
 }
 
+func NewUUID() string {
+	return uuid.New().String()
+}
+
 // getGroupID selects an ID by which the group will be grouped in the Google
 // Cloud Logging console.
 //
@@ -266,15 +270,14 @@ func (gl *GroupLogger) getMaxSeverity() logging.Severity {
 // middleware, then that trace ID is used.
 //
 // Otherwise, a pseudorandom UUID is used.
-func getGroupID(r *http.Request) string {
+func getGroupID(r *http.Request, UUIDFunc func() string) string {
 	// If the trace header exists, use the trace.
 	if r != nil {
 		if id := r.Header.Get("X-Cloud-Trace-Context"); id != "" {
 			return id
 		}
 	}
-	// Otherwise, generate a random group ID.
-	return uuid.New().String()
+	return UUIDFunc()
 }
 
 var detectedHost struct {
