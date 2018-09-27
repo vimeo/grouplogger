@@ -74,7 +74,7 @@ func (client *Client) Logger(r *http.Request, name string, opts ...logging.Logge
 	// Use trace from request if available; otherwise generate a group ID.
 	gl := &GroupLogger{
 		Req:         r,
-		GroupID:     getGroupID(r, NewUUID),
+		GroupID:     getGroupID(r, newUUID),
 		OuterLogger: outerLogger,
 		InnerLogger: innerLogger,
 	}
@@ -259,7 +259,7 @@ func (gl *GroupLogger) getMaxSeverity() logging.Severity {
 	return max
 }
 
-func NewUUID() string {
+func newUUID() string {
 	return uuid.New().String()
 }
 

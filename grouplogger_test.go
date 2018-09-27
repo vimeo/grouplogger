@@ -14,7 +14,7 @@ func mockUUIDFunc() string {
 func TestGetGroupIDWithRequestWithHeader(t *testing.T) {
 	r, _ := http.NewRequest("GET", "http://www.vimeo.com", nil)
 	r.Header.Set("X-Cloud-Trace-Context", "123")
-	id := getGroupID(r, NewUUID)
+	id := getGroupID(r, newUUID)
 	if id != "123" {
 		t.Fatal(id)
 	}
