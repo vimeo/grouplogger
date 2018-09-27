@@ -35,7 +35,7 @@ func TestCloseWith(t *testing.T) {
 	}
 
 	stats := logging.HTTPRequest{
-		Latency: time.Duration(1) * time.Second,
+		Latency: 1 * time.Second,
 	}
 
 	gl.CloseWith(&stats)
@@ -44,7 +44,7 @@ func TestCloseWith(t *testing.T) {
 		t.Fatal(outerEntry.Severity.String())
 	}
 
-	if outerEntry.HTTPRequest.Latency != time.Duration(1)*time.Second {
+	if outerEntry.HTTPRequest.Latency != 1*time.Second {
 		t.Fatal(outerEntry.HTTPRequest.Latency)
 	}
 
