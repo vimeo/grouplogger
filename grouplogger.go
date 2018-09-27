@@ -110,9 +110,21 @@ func (client *Client) SetOnError(f func(err error)) {
 type GroupLogger struct {
 	Req          *http.Request
 	GroupID      string
-	OuterLogger  *logging.Logger
+	OuterLogger  loggerLike
 	InnerLogger  *logging.Logger
 	InnerEntries []logging.Entry
+}
+
+type loggerLike interface {
+	Log(logging.Entry)
+}
+
+type mockLogger struct {
+	LogFunc func(logging.Entry)
+}
+
+func (l *mockLogger) Log(e logging.Entry) {
+	l.LogFunc(e)
 }
 
 // Close calls CloseWith without specifying statistics. It does not close the
